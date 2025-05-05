@@ -8,11 +8,11 @@ import lombok.Data;
 
 @MappedSuperclass
 @Data
-public class BaseEntity
+public abstract class BaseEntity
 {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    private Long id;
 }
 
 

@@ -7,7 +7,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 class FantascriptApplicationTests {
 
     @Test
-    void contextLoads() {
+    void contextLoads()
+    {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 }
