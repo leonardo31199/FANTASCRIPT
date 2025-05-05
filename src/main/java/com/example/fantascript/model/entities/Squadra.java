@@ -4,12 +4,15 @@ import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.OneToMany;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.sql.results.graph.Fetch;
 
 import java.util.ArrayList;
 import java.util.List;
-
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Data
 public class Squadra extends BaseEntity {

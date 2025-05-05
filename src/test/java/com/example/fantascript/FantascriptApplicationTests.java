@@ -1,19 +1,31 @@
 package com.example.fantascript;
 
+import com.example.fantascript.model.dao.GiocatoreDAO;
+import com.example.fantascript.model.entities.Giocatore;
+
+import com.example.fantascript.model.entities.Ruoli;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SpringBootTest
 class FantascriptApplicationTests {
+
+@Autowired
+GiocatoreDAO gdao;
 
     @Test
     void contextLoads()
     {
 
 
+
         List<Giocatore> giocatori = new ArrayList<>();
 
-        giocatori.add(new Giocatore("Luca", "Rossi", Ruoli.DIFENSORE, 62, null));
+        giocatori.add(new Giocatore("Luca", "Rossi", Ruoli.DIFENSORE, 62,null));
         giocatori.add(new Giocatore("Marco", "Bianchi", Ruoli.PORTIERE, 62, null));
         giocatori.add(new Giocatore("Carlos", "Martinez", Ruoli.ATTACCANTE, 82, null));
         giocatori.add(new Giocatore("John", "Smith", Ruoli.ATTACCANTE, 76, null));
@@ -47,7 +59,7 @@ class FantascriptApplicationTests {
         giocatori.add(new Giocatore("Riccardo", "Moretti", Ruoli.PORTIERE, 79, null));
         giocatori.add(new Giocatore("Enzo", "Conti", Ruoli.ATTACCANTE, 67, null));
         giocatori.add(new Giocatore("Julian", "Gallo", Ruoli.CENTROCAMPISTA, 64, null));
-        giocatori.add(new Giocatore("Mateo", "Testa", Ruoli.DIFENSORE, 82, null));
+        giocatori.add(new Giocatore("Stefaninos", "Rubinettis", Ruoli.ATTACCANTE, 82, null));
         giocatori.add(new Giocatore("Ismael", "Barone", Ruoli.PORTIERE, 73, null));
         giocatori.add(new Giocatore("Noah", "Lombardi", Ruoli.CENTROCAMPISTA, 76, null));
         giocatori.add(new Giocatore("Kaan", "Mancini", Ruoli.ATTACCANTE, 81, null));
@@ -64,7 +76,7 @@ class FantascriptApplicationTests {
         giocatori.add(new Giocatore("Adem", "Russo", Ruoli.PORTIERE, 70, null));
         giocatori.add(new Giocatore("Ilyas", "Palmieri", Ruoli.CENTROCAMPISTA, 77, null));
 
-
+gdao.saveAll(giocatori);
 
 
 
