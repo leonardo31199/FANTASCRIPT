@@ -13,8 +13,8 @@ import java.util.List;
 public class Utente extends BaseEntity
 {
     @Column(unique=true)
-    private String Username;
-    private String Password;
+    private String username;
+    private String password;
     @Column(unique=true)
     private String mail;
     private String roles;
