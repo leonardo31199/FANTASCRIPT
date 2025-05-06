@@ -22,7 +22,6 @@ public class Utente extends BaseEntity
     @OneToOne(mappedBy = "utente")
     private Squadra squadra;
 
-    @OneToMany(mappedBy = "utente",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
-    private List<Squadra> squadrine = new ArrayList<>();
+
 
 }
