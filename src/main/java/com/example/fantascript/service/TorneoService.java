@@ -12,7 +12,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class TorneoService {
-
+ //ciao
     private final SquadraDAO squadraDAO;
 
     public List<Partita> avviaTorneo() {
