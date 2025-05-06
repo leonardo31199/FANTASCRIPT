@@ -1,4 +1,4 @@
-package com.generation.ammazzon.configurations;
+package com.example.fantascript.configSecurity;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -16,14 +16,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
+/**
+ * Incapsula tutte le operazioni sul JSON Web Token:
+ *  • generazione
+ *  • estrazione username / ruoli
+ *  • validazione scadenza & firma
+ */
 @Service
 public class JwtService {
 
+	/** Chiave segreta in Base64 (min. 256 bit per HS256). */
+	@Value("${jwt.secret}")//prende il valore dall'application properties
+	private String secret;                         // es. "xvfr25... (Base64)"
 
-	@Value("${jwt.secret}")
-	private String secret;
-
+	/** Durata del token in millisecondi (es. 86_400_000 = 24h). */
 	@Value("${jwt.expiration}")
 	private long expirationMs;
 
@@ -35,7 +41,7 @@ public class JwtService {
 		this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secret));
 	}
 
-
+	/** Crea un token per l’utente autenticato, con i ruoli nel claim "roles". */
 	public String generateToken(Authentication auth) {
 		String roles = auth.getAuthorities().stream()
 				.map(GrantedAuthority::getAuthority)
@@ -53,13 +59,13 @@ public class JwtService {
 				.compact();
 	}
 
-	/** Estrae lo username (subject) senza sollevare eccezioni in caso di token invalido./
-	 public String extractUsername(String token) {
-	 try { return parse(token).getSubject(); }
-	 catch (Exception e) { return null; }
-	 }
+	/** Estrae lo username (subject) senza sollevare eccezioni in caso di token invalido. */
+	public String extractUsername(String token) {
+		try { return parse(token).getSubject(); }
+		catch (Exception e) { return null; }
+	}
 
-	 / Estrae i ruoli come lista di stringhe. */
+	/** Estrae i ruoli come lista di stringhe. */
 	public List<String> extractRoles(String token) {
 		try {
 			String roles = (String) parse(token).get("roles");
@@ -69,7 +75,7 @@ public class JwtService {
 		}
 	}
 
-
+	/** Controlla firma e scadenza. */
 	public boolean isTokenValid(String token) {
 		try {
 			Claims c = parse(token);
@@ -78,6 +84,7 @@ public class JwtService {
 			return false;
 		}
 	}
+
 	/* ---------- helper ---------- */
 
 	private Claims parse(String token) {

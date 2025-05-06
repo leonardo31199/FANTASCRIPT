@@ -12,15 +12,5 @@ public class GiocatoreController {
 
     @Autowired
     private GiocatoreDAO gdao;
-    @Autowired
-    private SquadraDAO sdao;
-
-
-
-
-
-
-
-
 
 }

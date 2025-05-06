@@ -1,6 +1,5 @@
-package com.generation.ammazzon.configurations;
+package com.example.fantascript.configSecurity;
 
-import com.example.fantascript.configSecurity.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,11 +16,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 
 /**
-
- Filtro eseguito una sola volta per richiesta.
- <p>
- Estrae il token JWT dall’header Authorization, lo valida e,
- se valido, inserisce l’oggetto Authentication nello SecurityContext.*/
+ * Filtro eseguito una sola volta per richiesta.
+ * <p>
+ * Estrae il token JWT dall’header Authorization, lo valida e,
+ * se valido, inserisce l’oggetto Authentication nello SecurityContext.
+ */
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -31,6 +30,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private JwtService jwtService;             // servizio che crea/valida i token
 	@Autowired
 	private  UserDetailsService userDetailsService;
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request,
 									HttpServletResponse response,

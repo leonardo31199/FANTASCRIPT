@@ -1,9 +1,6 @@
 package com.example.fantascript.model.entities;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,6 +21,9 @@ public class Squadra extends BaseEntity {
     @OneToMany (mappedBy = "squadra", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List <Giocatore> giocatori = new ArrayList<>();
 
+    @OneToOne
+    @JoinColumn(name="id_utente")
+    private Utente utente;
 
 
 

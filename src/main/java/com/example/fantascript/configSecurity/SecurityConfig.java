@@ -1,4 +1,4 @@
-package com.generation.ammazzon.configurations;
+package com.example.fantascript.configSecurity;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +22,27 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 public class SecurityConfig {
 
 	@Autowired
-	private com.generation.ammazzon.configurations.JwtAuthenticationFilter jwtFilter;
+	private JwtAuthenticationFilter jwtFilter;
 
-
-
-@Bean
+	@Bean //il metodo viene eseguito all'avvio e il return messo nell'ApplicationContext come Bean
 	public SecurityFilterChain api(HttpSecurity http) throws Exception {
-		http.csrf(AbstractHttpConfigurer::disable).sessionManagement(
-				sm ->
-						sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)).authorizeHttpRequests(
-				auth ->
-						auth//            URI           CRITERIO DI ACCETTAZIONE.requestMatchers("/api/auth/login").permitAll().requestMatchers("/api/auth/register").permitAll().requestMatchers(HttpMethod.GET,"/api/products").permitAll().requestMatchers(HttpMethod.POST,"/api/products").hasRole("ADMIN").anyRequest().authenticated()).addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+		http
+				.csrf(AbstractHttpConfigurer::disable)
+				.sessionManagement(
+						sm ->
+								sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+				)
+				.authorizeHttpRequests(
+						auth ->
+								auth
+										//			URI           CRITERIO DI ACCETTAZIONE
+										.requestMatchers("/api/auth/login").permitAll()
+										.requestMatchers("/api/auth/register").permitAll()
+										.requestMatchers(HttpMethod.GET,"/api/products").permitAll()
+										.requestMatchers(HttpMethod.POST,"/api/products").hasRole("ADMIN")
+										.anyRequest().authenticated()
+				)
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
 	}
@@ -44,9 +54,9 @@ public class SecurityConfig {
 		return config.getAuthenticationManager();
 	}
 
-/** Encoder standard: BCrypt con 10 round (default)./
- @Bean
- public PasswordEncoder passwordEncoder() {
- return new BCryptPasswordEncoder();
- }
- }
+
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+}
