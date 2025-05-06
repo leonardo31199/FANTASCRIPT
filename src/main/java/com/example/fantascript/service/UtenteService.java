@@ -1,7 +1,8 @@
-package com.example.fantascript.model.entities;
+package com.example.fantascript.service;
 
 import com.example.fantascript.model.dao.UtenteDao;
 
+import com.example.fantascript.model.entities.Utente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;

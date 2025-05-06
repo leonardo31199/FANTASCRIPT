@@ -35,7 +35,6 @@ public class SquadraController {
    }
 
 
-
     //recuperare la squadra utente
     @GetMapping("/squadre/utente/squadrautente")
     public Squadra getSquadraUtente()
@@ -69,6 +68,10 @@ public List <Squadra>getBotSquadre()
 
 
 }
+
+
+
+
 
 
     @PostMapping("/squadre/utente")
