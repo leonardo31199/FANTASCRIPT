@@ -19,8 +19,6 @@ public class Giocatore extends BaseEntity
     private int valutazione ;
 
 
-
-
     @ManyToOne
     @JoinColumn (name = "Id_squadra")
     private Squadra squadra ;
