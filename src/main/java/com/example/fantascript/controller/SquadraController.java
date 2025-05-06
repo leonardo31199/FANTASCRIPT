@@ -71,7 +71,7 @@ public class SquadraController {
             List<Giocatore> gruppo = liberi.subList(0, 5);
             for (Giocatore g : gruppo) {
                 g.setSquadra(bot);// Assegna ogni giocatore alla squadra bot
-d
+
             }
             // Salva squadra bot e giocatori nel database
             bot.setGiocatori(gruppo);
