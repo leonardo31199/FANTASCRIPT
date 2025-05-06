@@ -83,24 +83,6 @@ public class SquadraController {
         }
         return  s;
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         @Autowired
         private SquadraDAO sdao;
     @Autowired

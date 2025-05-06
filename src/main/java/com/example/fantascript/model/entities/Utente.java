@@ -13,16 +13,16 @@ import java.util.List;
 public class Utente extends BaseEntity
 {
     @Column(unique=true)
-    private String Username;
-    private String Password;
+    private String username;
+    private String password;
     @Column(unique=true)
     private String mail;
     private String roles;
 
-    @OneToOne(mappedBy = "Utente")
+    @OneToOne(mappedBy = "utente")
     private Squadra squadra;
 
-    @OneToMany(mappedBy = "Utente",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "utente",fetch = FetchType.EAGER,cascade = CascadeType.ALL)
     private List<Squadra> squadrine = new ArrayList<>();
 
 }
