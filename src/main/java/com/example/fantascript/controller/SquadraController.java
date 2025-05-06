@@ -111,12 +111,16 @@ public List <Squadra>getBotSquadre()
         liberi = liberi.subList(5, liberi.size());
 
 
+        //Lista di nomi predefiniti per le squadre bot
+
+        List<String>nomiBot=List.of("Napoli","Palermo","Generation141","Ubriaconi");
+
         int botCount = 4;
 
         for (int i = 0; i < botCount; i++) {
             if (liberi.size() < 5) break;
             Squadra bot = new Squadra();
-            bot.setNome("botsquadra" + (i + 1));
+            bot.setNome(nomiBot.get(i));
             bot.setLogo("bot" + (i + 1) + ".png");
 
             // Seleziona 5 giocatori per questa squadra bot
