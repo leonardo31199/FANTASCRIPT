@@ -38,8 +38,8 @@ public class SecurityConfig {
 										//			URI           CRITERIO DI ACCETTAZIONE
 										.requestMatchers("/api/auth/login").permitAll()
 										.requestMatchers("/api/auth/register").permitAll()
-										.requestMatchers(HttpMethod.GET,"/api/products").permitAll()
-										.requestMatchers(HttpMethod.POST,"/api/products").hasRole("ADMIN")
+										//.requestMatchers(HttpMethod.GET,"/api/products").permitAll()
+										//.requestMatchers(HttpMethod.POST,"/api/products").hasRole("ADMIN")
 										.anyRequest().authenticated()
 				)
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
