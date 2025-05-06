@@ -3,6 +3,7 @@ package com.example.fantascript.controller;
 import com.example.fantascript.model.dao.GiocatoreDAO;
 import com.example.fantascript.model.dao.SquadraDAO;
 import com.example.fantascript.model.entities.Giocatore;
+import com.example.fantascript.model.entities.Ruoli;
 import com.example.fantascript.model.entities.Squadra;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -44,7 +46,19 @@ public class SquadraController {
 
         // Seleziona i primi 5 giocatori per assegnarli alla squadra dell’utente
 
-        List<Giocatore> daAssegnare = liberi.stream().limit(5).collect(Collectors.toList());
+        List<Giocatore> daAssegnare = new ArrayList<>();
+
+        for (Ruoli ruolo : Ruoli.values()) {
+            Giocatore trovato = liberi.stream()
+                    .filter(g -> g.getRuolo() == ruolo)
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Nessun giocatore libero per il ruolo: " + ruolo));
+
+            daAssegnare.add(trovato);
+            liberi.remove(trovato); // evita duplicazioni nei bot
+        }
+
+
 
 
         //Assegna giocatori selezionati alla squadra dell'utente
@@ -55,54 +69,52 @@ public class SquadraController {
         sdao.save(s);
         gdao.saveAll(daAssegnare);
 
-        // Rimuove i 5 giocatori appena assegnati dalla lista dei liberi
-        liberi = liberi.subList(5, liberi.size());
+
 
 
         int botCount = 4;
 
         for (int i = 0; i < botCount; i++) {
             if (liberi.size() < 5) break;
+
             Squadra bot = new Squadra();
             bot.setNome("botsquadra" + (i + 1));
             bot.setLogo("bot" + (i + 1) + ".png");
 
-            // Seleziona 5 giocatori per questa squadra bot
-            List<Giocatore> gruppo = liberi.subList(0, 5);
-            for (Giocatore g : gruppo) {
-                g.setSquadra(bot);// Assegna ogni giocatore alla squadra bot
-d
-            }
-            // Salva squadra bot e giocatori nel database
-            bot.setGiocatori(gruppo);
-            sdao.save(bot);
-            gdao.saveAll(gruppo);
+            List<Giocatore> gruppo = new ArrayList<>();
 
-            // aggiorna la lista dei liberi escludendo quelli appena assegnati
-            liberi = liberi.subList(5, liberi.size());
+            for (Ruoli ruolo : Ruoli.values()) {
+                Giocatore trovato = liberi.stream()
+                        .filter(g -> g.getRuolo() == ruolo)
+                        .findFirst()
+                        .orElse(null);
+
+                if (trovato == null) {
+                    System.out.println(" Non ci sono abbastanza giocatori per assegnare il ruolo: " + ruolo + " alla squadra bot " + bot.getNome());
+                    break;
+                }
+
+                gruppo.add(trovato);
+                liberi.remove(trovato);
+            }
+
+            if (gruppo.size() == 5) {
+                for (Giocatore g : gruppo) {
+                    g.setSquadra(bot);
+                }
+                bot.setGiocatori(gruppo);
+                sdao.save(bot);
+                gdao.saveAll(gruppo);
+            } else {
+                System.out.println(" Squadra bot " + bot.getNome() + " non creata per mancanza di ruoli disponibili.");
+                break;
+            }
         }
         return  s;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        @Autowired
-        private SquadraDAO sdao;
+    @Autowired
+    private SquadraDAO sdao;
     @Autowired
     private GiocatoreDAO gdao;
     }
