@@ -18,10 +18,10 @@ public class Squadra extends BaseEntity {
     private String logo;
     private Long valutazione_tot;
 
-    @OneToMany (mappedBy = "squadra", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany (mappedBy = "squadra", fetch = FetchType.EAGER, cascade = CascadeType.REMOVE,orphanRemoval = false)
     private List <Giocatore> giocatori = new ArrayList<>();
 
-    @OneToOne
+    @OneToOne(optional = true)
     @JoinColumn(name="id_utente")
     private Utente utente;
 

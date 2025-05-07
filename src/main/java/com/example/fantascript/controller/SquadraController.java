@@ -7,12 +7,14 @@ import com.example.fantascript.model.dto.GiocatoreDTO;
 import com.example.fantascript.model.dto.SquadraDTO;
 import com.example.fantascript.model.dto.SquadraResponseDTO;
 import com.example.fantascript.model.entities.Giocatore;
+import com.example.fantascript.model.entities.Ruoli;
 import com.example.fantascript.model.entities.Squadra;
 import com.example.fantascript.model.entities.Utente;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -39,6 +41,8 @@ public class SquadraController {
                .orElseThrow(()->new RuntimeException("Squadra non trovata con id: " + id));
 
    }
+
+   // CHE MOSTRA SOLO LA SQUADRA DELL'UTENTE - PROVATO - FUNZIONANTE
     @GetMapping("/squadre/utente/squadrautente-dto")
     public SquadraResponseDTO getSquadraUtenteDTO(Authentication auth) {
         Utente u = udao.findByUsername(auth.getName());
@@ -67,8 +71,8 @@ public class SquadraController {
 
         return dto;
     }
-
-    @GetMapping("/squadre/con-giocatori")
+//ciao
+    @GetMapping("/squadre/tuttesquadre")
     public List<SquadraResponseDTO> getTutteLeSquadreConGiocatori() {
         List<Squadra> squadre = sdao.findAll();
 
@@ -108,14 +112,7 @@ public class SquadraController {
     public void resetSquadre()
     {
 
-        List<Giocatore>tutti = gdao.findAll();
-        for(Giocatore g:tutti)
-        {
-            g.setSquadra(null); //toglie il giocatore della squadra
-        }
-        gdao.saveAll(tutti);  //salva i giocatori liberi
-        sdao.deleteAll(); // elimina le squadre
-
+       sdao.deleteAll();
     }
 
 @GetMapping("/squadre/bot")
@@ -134,78 +131,88 @@ public List <Squadra>getBotSquadre()
 
 
     @PostMapping("/squadre/utente")
-    // Recupera tutti i giocatori dal database e filtra solo quelli che NON sono assegnati ad una squadra
-
-    public void  creaSquadraUtente(@RequestBody SquadraDTO dto, Authentication auth) {
-
-
-        Utente u=udao.findByUsername(auth.getName());
+    public void creaSquadraUtente(@RequestBody SquadraDTO dto, Authentication auth) {
+        Utente u = udao.findByUsername(auth.getName());
 
         Squadra s = new Squadra();
         s.setNome(dto.getNome());
         s.setLogo(dto.getLogo());
         s.setUtente(u);
-        List<Giocatore> liberi = gdao.findAll()
 
+        List<Giocatore> liberi = gdao.findAll()
                 .stream()
                 .filter(g -> g.getSquadra() == null)
                 .collect(Collectors.toList());
 
+        // Filtri per ruolo
+        List<Giocatore> portieri = new ArrayList<>(liberi.stream().filter(g -> g.getRuolo() == Ruoli.PORTIERE).toList());
+        List<Giocatore> difensori = new ArrayList<>(liberi.stream().filter(g -> g.getRuolo() == Ruoli.DIFENSORE).toList());
+        List<Giocatore> centrocampisti = new ArrayList<>(liberi.stream().filter(g -> g.getRuolo() == Ruoli.CENTROCAMPISTA).toList());
+        List<Giocatore> attaccanti = new ArrayList<>(liberi.stream().filter(g -> g.getRuolo() == Ruoli.ATTACCANTE).toList());
 
-        // Controllo: servono almeno 25 giocatori liberi per creare 5 squadre da 5 giocatori (1 utente + 4 bot)
-        if (liberi.size() < 25) {
-            throw new RuntimeException("Non ci sono giocatori liberi per creare una squadra");
+        // Verifica disponibilità
+        if (portieri.size() < 4 || difensori.size() < 8 || centrocampisti.size() < 4 || attaccanti.size() < 5) {
+            throw new RuntimeException("Non ci sono abbastanza giocatori per creare 4 squadre bilanciate");
         }
 
-        // Mischia casualmente i giocatori liberi per evitare che siano sempre gli stessi
-        Collections.shuffle(liberi);
+        // --------------------
+        // SQUADRA DELL'UTENTE
+        // --------------------
+        Collections.shuffle(portieri);
+        Collections.shuffle(difensori);
+        Collections.shuffle(centrocampisti);
+        Collections.shuffle(attaccanti);
 
+        List<Giocatore> daAssegnare = new ArrayList<>();
+        daAssegnare.add(portieri.remove(0));
+        daAssegnare.add(difensori.remove(0));
+        daAssegnare.add(difensori.remove(0));
+        daAssegnare.add(centrocampisti.remove(0));
+        daAssegnare.add(attaccanti.remove(0));
 
-        // Seleziona i primi 5 giocatori per assegnarli alla squadra dell’utente
-
-        List<Giocatore> daAssegnare = liberi.stream().limit(5).collect(Collectors.toList());
-
-
-        //Assegna giocatori selezionati alla squadra dell'utente
         for (Giocatore g : daAssegnare) {
-            g.setSquadra(s); // Assegna ciascun giocatore alla squadra ricevuta nel body
+            g.setSquadra(s);
         }
-        // Assegna i giocatori alla squadra e salva sia la squadra che i giocatori nel database        s.setGiocatori(daAssegnare);
+
+        s.setGiocatori(daAssegnare);
         sdao.save(s);
         gdao.saveAll(daAssegnare);
 
-        // Rimuove i 5 giocatori appena assegnati dalla lista dei liberi
-        liberi = liberi.subList(5, liberi.size());
+        // --------------------
+        // BOT
+        // --------------------
+        List<String> nomiBot = List.of("Napoli", "Palermo", "Generation141");
 
+        for (int i = 0; i < 3; i++) {
+            if (portieri.size() < 1 || difensori.size() < 2 || centrocampisti.size() < 1 || attaccanti.size() < 1)
+                break;
 
-        //Lista di nomi predefiniti per le squadre bot
-
-        List<String>nomiBot=List.of("Napoli","Palermo","Generation141","Ubriaconi");
-
-        int botCount = 4;
-
-        for (int i = 0; i < botCount; i++) {
-            if (liberi.size() < 5) break;
             Squadra bot = new Squadra();
             bot.setNome(nomiBot.get(i));
             bot.setLogo("bot" + (i + 1) + ".png");
 
-            // Seleziona 5 giocatori per questa squadra bot
-            List<Giocatore> gruppo = liberi.subList(0, 5);
-            for (Giocatore g : gruppo) {
-                g.setSquadra(bot);// Assegna ogni giocatore alla squadra bot
+            Collections.shuffle(portieri);
+            Collections.shuffle(difensori);
+            Collections.shuffle(centrocampisti);
+            Collections.shuffle(attaccanti);
 
+            List<Giocatore> gruppo = new ArrayList<>();
+            gruppo.add(portieri.remove(0));
+            gruppo.add(difensori.remove(0));
+            gruppo.add(difensori.remove(0));
+            gruppo.add(centrocampisti.remove(0));
+            gruppo.add(attaccanti.remove(0));
+
+            for (Giocatore g : gruppo) {
+                g.setSquadra(bot);
             }
-            // Salva squadra bot e giocatori nel database
+
             bot.setGiocatori(gruppo);
             sdao.save(bot);
             gdao.saveAll(gruppo);
-
-            // aggiorna la lista dei liberi escludendo quelli appena assegnati
-            liberi = liberi.subList(5, liberi.size());
         }
-
     }
+
 
 
     @Autowired

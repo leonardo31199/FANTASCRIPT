@@ -6,6 +6,8 @@ import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +23,7 @@ public class Giocatore extends BaseEntity
 
     @ManyToOne
     @JoinColumn (name = "Id_squadra")
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     private Squadra squadra ;
 
 
