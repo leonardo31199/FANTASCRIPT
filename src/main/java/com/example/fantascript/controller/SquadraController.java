@@ -2,9 +2,13 @@ package com.example.fantascript.controller;
 
 import com.example.fantascript.model.dao.GiocatoreDAO;
 import com.example.fantascript.model.dao.SquadraDAO;
+import com.example.fantascript.model.dao.UtenteDao;
+import com.example.fantascript.model.dto.SquadraDTO;
 import com.example.fantascript.model.entities.Giocatore;
 import com.example.fantascript.model.entities.Squadra;
+import com.example.fantascript.model.entities.Utente;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -77,7 +81,15 @@ public List <Squadra>getBotSquadre()
     @PostMapping("/squadre/utente")
     // Recupera tutti i giocatori dal database e filtra solo quelli che NON sono assegnati ad una squadra
 
-    public Squadra creaSquadraUtente(@RequestBody Squadra s) {
+    public void  creaSquadraUtente(@RequestBody SquadraDTO dto, Authentication auth) {
+
+
+        Utente u=udao.findByUsername(auth.getName());
+
+        Squadra s = new Squadra();
+        s.setNome(dto.getNome());
+        s.setLogo(dto.getLogo());
+        s.setUtente(u);
         List<Giocatore> liberi = gdao.findAll()
 
                 .stream()
@@ -137,7 +149,7 @@ public List <Squadra>getBotSquadre()
             // aggiorna la lista dei liberi escludendo quelli appena assegnati
             liberi = liberi.subList(5, liberi.size());
         }
-        return  s;
+
     }
 
 
@@ -145,4 +157,6 @@ public List <Squadra>getBotSquadre()
     private SquadraDAO sdao;
     @Autowired
     private GiocatoreDAO gdao;
+    @Autowired
+    private UtenteDao udao;
     }
