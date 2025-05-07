@@ -23,7 +23,7 @@ public class TorneoController {
     public List<PartitaDTO>avviaTorneo()
     {
         List<Partita> partite = torneoService.avviaTorneo();
-
+//ciao
         return partite.stream()
                 .map(p->new PartitaDTO(
                         p.getSquadraCasa().getNome(),
