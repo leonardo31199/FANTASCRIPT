@@ -3,7 +3,9 @@ package com.example.fantascript.controller;
 import com.example.fantascript.model.dao.GiocatoreDAO;
 import com.example.fantascript.model.dao.SquadraDAO;
 import com.example.fantascript.model.dao.UtenteDao;
+import com.example.fantascript.model.dto.GiocatoreDTO;
 import com.example.fantascript.model.dto.SquadraDTO;
+import com.example.fantascript.model.dto.SquadraResponseDTO;
 import com.example.fantascript.model.entities.Giocatore;
 import com.example.fantascript.model.entities.Squadra;
 import com.example.fantascript.model.entities.Utente;
@@ -37,8 +39,59 @@ public class SquadraController {
                .orElseThrow(()->new RuntimeException("Squadra non trovata con id: " + id));
 
    }
+    @GetMapping("/squadre/utente/squadrautente-dto")
+    public SquadraResponseDTO getSquadraUtenteDTO(Authentication auth) {
+        Utente u = udao.findByUsername(auth.getName());
 
+        Squadra squadra = sdao.findAll().stream()
+                .filter(s -> s.getUtente() != null && s.getUtente().equals(u))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Squadra dell'utente non trovata"));
 
+        SquadraResponseDTO dto = new SquadraResponseDTO();
+        dto.setId(squadra.getId());
+        dto.setNome(squadra.getNome());
+        dto.setLogo(squadra.getLogo());
+
+        List<GiocatoreDTO> giocatori = squadra.getGiocatori().stream().map(g -> {
+            GiocatoreDTO gDto = new GiocatoreDTO();
+            gDto.setId(g.getId());
+            gDto.setNome(g.getNome());
+            gDto.setCognome(g.getCognome());
+            gDto.setRuolo(g.getRuolo().name()); // enum -> stringa
+            gDto.setValutazione(g.getValutazione());
+            return gDto;
+        }).collect(Collectors.toList());
+
+        dto.setGiocatori(giocatori);
+
+        return dto;
+    }
+
+    @GetMapping("/squadre/con-giocatori")
+    public List<SquadraResponseDTO> getTutteLeSquadreConGiocatori() {
+        List<Squadra> squadre = sdao.findAll();
+
+        return squadre.stream().map(s -> {
+            SquadraResponseDTO dto = new SquadraResponseDTO();
+            dto.setId(s.getId());
+            dto.setNome(s.getNome());
+            dto.setLogo(s.getLogo());
+
+            List<GiocatoreDTO> giocatori = s.getGiocatori().stream().map(g -> {
+                GiocatoreDTO gDto = new GiocatoreDTO();
+                gDto.setId(g.getId());
+                gDto.setNome(g.getNome());
+                gDto.setCognome(g.getCognome());
+                gDto.setRuolo(g.getRuolo().name());
+                gDto.setValutazione(g.getValutazione());
+                return gDto;
+            }).collect(Collectors.toList());
+
+            dto.setGiocatori(giocatori);
+            return dto;
+        }).collect(Collectors.toList());
+    }
     //recuperare la squadra utente
     @GetMapping("/squadre/utente/squadrautente")
     public Squadra getSquadraUtente()
@@ -48,6 +101,8 @@ public class SquadraController {
                 .findFirst()
                 .orElseThrow(()->new RuntimeException("Nessuna squadra utente trovata"));
     }
+
+
 
     @DeleteMapping("/squadre/reset")
     public void resetSquadre()
