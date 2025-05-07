@@ -10,17 +10,27 @@ import lombok.NoArgsConstructor;
 
 
 public class Partita {
-
+    private String id;
   private Squadra squadraCasa;
   private Squadra squadraTrasferta;
   private Squadra vincitore;
   private int golCasa;
   private int golTrasferta;
 
-  //simula partita tra casa e trasferta
+    public Partita(Squadra squadraCasa, Squadra squadraTrasferta, Squadra vincitore, int golCasa, int golTrasferta) {
+        this.squadraCasa = squadraCasa;
+        this.squadraTrasferta = squadraTrasferta;
+        this.vincitore = vincitore;
+        this.golCasa = golCasa;
+        this.golTrasferta = golTrasferta;
+    }
+
+    //simula partita tra casa e trasferta
 
     public void simula ()
     {
+        id=squadraCasa.getNome()+"-"+squadraTrasferta.getNome();
+
 
         // gol in casa da 0 a 5
         this.golCasa = (int ) (Math.random()*6);

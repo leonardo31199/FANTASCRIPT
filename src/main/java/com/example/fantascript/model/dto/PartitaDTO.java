@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 // (nomi delle squadre, gol e vincitore)
 public class PartitaDTO {
 
+
     private String squadraCasa;
     private int golCasa;
 
@@ -20,4 +21,5 @@ public class PartitaDTO {
     private int goltrasferta;
 
     private String vincitore;
+
 }
