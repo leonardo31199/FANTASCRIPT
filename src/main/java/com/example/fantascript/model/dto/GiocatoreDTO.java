@@ -13,4 +13,6 @@ public class GiocatoreDTO {
     private String cognome;
     private String ruolo;
     private int valutazione;
+    private String nazionalita;
+    private int numeromaglietta;
 }

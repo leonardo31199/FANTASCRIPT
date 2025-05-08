@@ -1,5 +1,6 @@
 package com.example.fantascript.model.entities;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -26,7 +27,7 @@ public class Giocatore extends BaseEntity
 
     @ManyToOne
     @JoinColumn (name = "Id_squadra")
-    @OnDelete(action = OnDeleteAction.SET_NULL)
+
     private Squadra squadra ;
 
 

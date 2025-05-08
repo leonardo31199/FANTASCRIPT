@@ -10,6 +10,9 @@ import com.example.fantascript.model.entities.Giocatore;
 import com.example.fantascript.model.entities.Ruoli;
 import com.example.fantascript.model.entities.Squadra;
 import com.example.fantascript.model.entities.Utente;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +29,11 @@ import java.util.stream.Collectors;
 
 
 public class SquadraController {
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+
 //recupera tutte le squadre (utente e bot)
     @GetMapping("/squadre")
     public List <Squadra> getAllSquadre()
@@ -57,6 +65,7 @@ public class SquadraController {
         dto.setNome(squadra.getNome());
         dto.setLogo(squadra.getLogo());
 
+
         List<GiocatoreDTO> giocatori = squadra.getGiocatori().stream().map(g -> {
             GiocatoreDTO gDto = new GiocatoreDTO();
             gDto.setId(g.getId());
@@ -64,6 +73,8 @@ public class SquadraController {
             gDto.setCognome(g.getCognome());
             gDto.setRuolo(g.getRuolo().name()); // enum -> stringa
             gDto.setValutazione(g.getValutazione());
+            gDto.setNazionalita(g.getNazionalita());
+            gDto.setNumeromaglietta(g.getNumeromaglietta());
             return gDto;
         }).collect(Collectors.toList());
 
@@ -108,14 +119,13 @@ public class SquadraController {
 
 
 //ciao
-    @DeleteMapping("/squadre/reset")
-    public void resetSquadre()
-    {
+@DeleteMapping("/squadre/reset")
+public void resetSquadre() {
+    gdao.scollegaTuttiIGiocatori();
+    sdao.eliminaTutteLeSquadre();
+}
 
-       sdao.deleteAll();
-    }
-
-@GetMapping("/squadre/bot")
+    @GetMapping("/squadre/bot")
 public List <Squadra>getBotSquadre()
 {
     return sdao.findAll().stream()
@@ -138,7 +148,7 @@ public List <Squadra>getBotSquadre()
         s.setNome(dto.getNome());
         s.setLogo(dto.getLogo());
         s.setUtente(u);
-
+        sdao.save(s);
         List<Giocatore> liberi = gdao.findAll()
                 .stream()
                 .filter(g -> g.getSquadra() == null)
@@ -175,7 +185,7 @@ public List <Squadra>getBotSquadre()
         }
 
         s.setGiocatori(daAssegnare);
-        sdao.save(s);
+
         gdao.saveAll(daAssegnare);
 
         // --------------------
