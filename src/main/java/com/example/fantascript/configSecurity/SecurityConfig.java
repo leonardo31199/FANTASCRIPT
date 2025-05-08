@@ -40,7 +40,6 @@ public class SecurityConfig {
 										.requestMatchers("/api/auth/register").permitAll()
 										//.requestMatchers(HttpMethod.GET,"/api/products").permitAll()
 										//.requestMatchers(HttpMethod.POST,"/api/products").hasRole("ADMIN")
-
 										.anyRequest().authenticated()
 				)
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);

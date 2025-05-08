@@ -19,6 +19,9 @@ public class Giocatore extends BaseEntity
     private String cognome;
     private Ruoli ruolo ;
     private int valutazione ;
+    private String nazionalita;
+    private int numeromaglietta;
+
 
 
     @ManyToOne
