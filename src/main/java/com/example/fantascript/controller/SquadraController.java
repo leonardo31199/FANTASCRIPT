@@ -107,7 +107,7 @@ public class SquadraController {
     }
 
 
-
+//ciao
     @DeleteMapping("/squadre/reset")
     public void resetSquadre()
     {
