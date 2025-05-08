@@ -17,6 +17,7 @@ public class Partita {
   private int golCasa;
   private int golTrasferta;
 
+
     public Partita(Squadra squadraCasa, Squadra squadraTrasferta, Squadra vincitore, int golCasa, int golTrasferta) {
         this.squadraCasa = squadraCasa;
         this.squadraTrasferta = squadraTrasferta;

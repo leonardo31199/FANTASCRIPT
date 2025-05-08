@@ -33,16 +33,15 @@ public class SecurityConfig {
 								sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 				)
 				.authorizeHttpRequests(
-						auth ->
-								auth
-										//			URI           CRITERIO DI ACCETTAZIONE
-										.requestMatchers("/api/auth/login").permitAll()
-										.requestMatchers("/api/auth/register").permitAll()
-										//.requestMatchers(HttpMethod.GET,"/api/products").permitAll()
-										//.requestMatchers(HttpMethod.POST,"/api/products").hasRole("ADMIN")
-
-										.anyRequest().authenticated()
+						auth -> auth
+								.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+								.requestMatchers("/api/auth/login").permitAll()
+								.requestMatchers("/api/auth/register").permitAll()
+								.requestMatchers(HttpMethod.POST, "/api/team/squadre/utente").hasAuthority("ROLE_USER")
+								.requestMatchers(HttpMethod.GET, "/api/team/squadre/utente/squadrautente-dto").hasAuthority("ROLE_USER")
+								.anyRequest().authenticated()
 				)
+
 				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
