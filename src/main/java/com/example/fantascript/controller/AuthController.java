@@ -34,8 +34,6 @@ public class AuthController
 		daCreare.setMail(dto.mail());
 		daCreare.setRoles("ROLE_USER");
 		daCreare = udao.save(daCreare);
-
-
 	}
 
 	@PostMapping("/login")
@@ -56,7 +54,6 @@ public class AuthController
 
 		return nomeUtente;
 	}
-
 
 	public record LoginDto(
 			String username,

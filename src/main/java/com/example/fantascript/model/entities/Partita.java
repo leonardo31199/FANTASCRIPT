@@ -34,10 +34,10 @@ public class Partita {
 
 
         // gol in casa da 0 a 5
-        this.golCasa = (int ) (Math.random()*6);
+        this.golCasa = (int) (Math.random()*6);
 
         //gol in trasfera **
-        this.golTrasferta = (int ) (Math.random()*6);
+        this.golTrasferta = (int) (Math.random()*6);
 
         if (golCasa>golTrasferta)
         {
