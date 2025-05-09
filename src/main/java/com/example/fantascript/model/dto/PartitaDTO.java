@@ -23,5 +23,6 @@ public class PartitaDTO {
     private int goltrasferta;
 
     private String vincitore;
+    private List<TelecronacaDTO> telecronaca;
 
 }

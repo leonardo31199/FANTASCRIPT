@@ -1,8 +1,12 @@
 package com.example.fantascript.model.entities;
 
+import com.example.fantascript.model.dto.TelecronacaDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -14,6 +18,7 @@ public class Partita {
   private Squadra squadraCasa;
   private Squadra squadraTrasferta;
   private Squadra vincitore;
+  private List<TelecronacaDTO> telecronaca = new ArrayList<>();
   private int golCasa;
   private int golTrasferta;
 
