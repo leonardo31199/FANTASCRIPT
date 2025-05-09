@@ -14,15 +14,9 @@ public class ControllerIa
     @Autowired
     IaIa ia;
 
-    @GetMapping("/ia")
-    public Mono<String> parlamoconia(@RequestParam String prompt)
-    {
-       return ia.ask(prompt);
-    }
-
-    @GetMapping("/api/ia/telecronaca")
-    public Mono<IaIa.MCQ> generatore(@RequestParam String topic)
-    {
-        return ia.generateMcq(topic);
-    }
+    @GetMapping
+    public telecronaca("/api/telecronaca")
+{
+    return"";
+}
 }

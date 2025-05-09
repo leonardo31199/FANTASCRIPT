@@ -1,5 +1,7 @@
 package com.example.fantascript.service;
 
+import com.example.fantascript.model.dto.GiocatoreDTO;
+import com.example.fantascript.model.dto.PartitaDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -28,14 +30,12 @@ public class IaIa
 
     private final WebClient client = WebClient.builder().build();
 
-    public Mono<MCQ> generateMcq(String topic) {
-        String userPrompt = "";
+    public telecronista(PartitaDTO  ) {
 
         ChatRequest req = new ChatRequest(
                 model,
                 List.of(
-                        new ChatRequest.Message("system", "tu da oggi sei un telecronista devi commentare tutto quello che succede in una partita di 2 minuti simulandola tu stesso"),
-                        new ChatRequest.Message("user", userPrompt)
+                        new ChatRequest.Message("system", "tu da oggi sei un telecronista devi commentare tutto quello che succede in una partita di 2 minuti simulandola tu stesso, devi restituire un json con un array di stringhe dove ogni stringa rappresenta il commento dell'azione della partita"),
                 ),
                 false  // no streaming
         );
