@@ -1,5 +1,6 @@
 package com.example.fantascript.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -27,7 +28,7 @@ public class Giocatore extends BaseEntity
 
     @ManyToOne
     @JoinColumn (name = "Id_squadra")
-
+    @JsonIgnore
     private Squadra squadra ;
 
 
