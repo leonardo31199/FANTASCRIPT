@@ -1,14 +1,14 @@
 package com.example.fantascript.service;
 
-import com.example.fantascript.model.dto.GiocatoreDTO;
-import com.example.fantascript.model.dto.PartitaDTO;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.example.fantascript.model.dto.TelecronacaRequestDTO;
+import com.example.fantascript.model.dto.TelecronacaDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -16,10 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class IaIa
-{
-
-
+public class IaIa {
 
     @Value("${lmstudio.url}")
     private String baseUrl;
@@ -27,63 +24,44 @@ public class IaIa
     @Value("${lmstudio.model}")
     private String model;
 
-
     private final WebClient client = WebClient.builder().build();
+    private final ObjectMapper mapper = new ObjectMapper();
 
-    public telecronista(PartitaDTO  ) {
+    public Mono<List<TelecronacaDTO>> telecronista(TelecronacaRequestDTO partita) {
+        String prompt = String.format(
+                "Sei un telecronista sportivo. Fase: %s. Partita %s vs %s (%d-%d). " +
+                        "Marcatore: %s al %d'. Restituisci JSON array di oggetti {minuto, commento}:",
+                partita.getFase(),
+                partita.getSquadraCasa(), partita.getSquadraTrasferta(),
+                partita.getGolCasa(), partita.getGolTrasferta(),
+                partita.getMarcatori().get(0).getNome() + " " + partita.getMarcatori().get(0).getCognome(),                partita.getMarcatori().get(0).getMinuto()
+        );
 
         ChatRequest req = new ChatRequest(
                 model,
                 List.of(
-                        new ChatRequest.Message("system", "tu da oggi sei un telecronista devi commentare tutto quello che succede in una partita di 2 minuti simulandola tu stesso, devi restituire un json con un array di stringhe dove ogni stringa rappresenta il commento dell'azione della partita"),
+                        new ChatRequest.Message("system", "Tu da oggi sei un telecronista esperto."),
+                        new ChatRequest.Message("user", prompt)
                 ),
-                false  // no streaming
+                false
         );
 
-        WebClient.RequestHeadersSpec<?> spec = client.post()
+        return client.post()
                 .uri(baseUrl + "/v1/chat/completions")
                 .contentType(MediaType.APPLICATION_JSON)
-                .bodyValue(req);
-
-        return spec.retrieve()
+                .bodyValue(req)
+                .retrieve()
                 .bodyToMono(ChatResponse.class)
+                // estrai solo il contenuto testuale
                 .map(cr -> cr.choices().get(0).message().content())
-                .map(this::parseMcqJson);
-    }
-
-    /** Converte la stringa JSON in MCQ */
-    private MCQ parseMcqJson(String json) {
-        try {
-            return new ObjectMapper().readValue(json, MCQ.class);
-        } catch (Exception e) {
-            throw new RuntimeException("JSON MCQ malformato: " + json, e);
-        }
-    }
-
-    /**
-     * Invia un prompt e restituisce la risposta completa (non stream).
-     */
-    public Mono<String> ask(String userPrompt)
-    {
-        ChatRequest req = new ChatRequest(
-                model,
-                List.of(
-                        new ChatRequest.Message("system", "Sei un assistente utile."),
-                        new ChatRequest.Message("user", userPrompt)
-                ),
-                false     // risposta in un unico payload
-        );
-
-        WebClient.RequestHeadersSpec<?> spec =
-                    client.post()
-                .uri(baseUrl + "/v1/chat/completions")
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(BodyInserters.fromValue(req));
-
-
-        return spec.retrieve()
-                .bodyToMono(ChatResponse.class)
-                .map(cr -> cr.choices().get(0).message().content());
+                // parsifica il JSON in List<TelecronacaDTO> con gestione dell’eccezione
+                .map(json -> {
+                    try {
+                        return mapper.readValue(json, new TypeReference<List<TelecronacaDTO>>() {});
+                    } catch (JsonProcessingException e) {
+                        throw new RuntimeException("Errore parsing JSON della telecronaca: " + e.getMessage(), e);
+                    }
+                });
     }
 
     public record ChatRequest(
@@ -94,21 +72,14 @@ public class IaIa
         public record Message(String role, String content) {}
     }
 
-
     public record ChatResponse(
             String id,
             String object,
             long created,
-            @JsonProperty("choices") List<Choice> choices
+            List<Choice> choices
     ) {
-        public record Choice(
-                int index,
-                Message message,
-                @JsonProperty("finish_reason") String finishReason
-        ) {
+        public record Choice(Message message) {
             public record Message(String role, String content) {}
         }
     }
-
-    public record MCQ(String question, List<String> options, int answer_index) {}
 }

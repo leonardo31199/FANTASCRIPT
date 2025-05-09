@@ -1,6 +1,5 @@
 package com.example.fantascript.model.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,18 +9,11 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-// Questo DTO serve per restituire al frontend
-// i risultati di una partita simulata
-// (nomi delle squadre, gol e vincitore)
-public class PartitaDTO {
-
-
+public class TelecronacaRequestDTO {
+    private String fase;                     // “semifinale” o “finale”
     private String squadraCasa;
     private int golCasa;
-
     private String squadraTrasferta;
-    private int goltrasferta;
-
-    private String vincitore;
-
+    private int golTrasferta;
+    private List<GiocatoreGoalDTO> marcatori; // lista dei marcatori con minuto
 }
