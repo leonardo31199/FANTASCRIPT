@@ -1,6 +1,8 @@
 package com.example.fantascript.model.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,5 +26,6 @@ public class PartitaDTO {
 
     private String vincitore;
     private List<TelecronacaDTO> telecronaca;
-
+//    @JsonBackReference // Dichiara che questo lato della relazione è "inverse"
+//    private List<PartitaDTO> partite;
 }

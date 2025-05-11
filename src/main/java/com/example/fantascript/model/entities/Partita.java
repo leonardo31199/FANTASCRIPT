@@ -1,6 +1,7 @@
 package com.example.fantascript.model.entities;
 
 import com.example.fantascript.model.dto.TelecronacaDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,6 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-
 
 public class Partita {
     private String id;

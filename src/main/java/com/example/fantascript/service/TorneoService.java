@@ -27,6 +27,8 @@ public class TorneoService {
      * Restituisce la lista di 3 partite simulate (due semifinali e la finale).
      */
     public List<Partita> avviaTorneo() {
+
+
         // Recupera 4 squadre (utente + 3 bot)
         List<Squadra> squadre = new ArrayList<>(squadraDAO.findAll().stream()
                 .filter(s -> s.getNome() != null)
