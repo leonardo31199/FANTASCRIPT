@@ -48,15 +48,15 @@ public class TorneoService {
         Collections.shuffle(squadre);
 
         // 3) Simula le due semifinali
-        Partita semi1 = new Partita(squadre.get(0), squadre.get(1), null, 0, 0);
-        Partita semi2 = new Partita(squadre.get(2), squadre.get(3), null, 0, 0);
+        Partita semi1 = new Partita(squadre.get(0), squadre.get(1), null, null, null);
+        Partita semi2 = new Partita(squadre.get(2), squadre.get(3), null, null, null);
         semi1.simula();
         semi2.simula();
 
         // 4) Simula la finale tra i vincitori
         Squadra v1 = semi1.getVincitore();
         Squadra v2 = semi2.getVincitore();
-        Partita finale = new Partita(v1, v2, null, 0, 0);
+        Partita finale = new Partita(v1, v2, null, null, null);
         finale.simula();
 
         // 5) Popola la lista in sessione
@@ -82,33 +82,33 @@ public class TorneoService {
         }
         Collections.shuffle(squadre);
 
-        Partita semi1 = new Partita(squadre.get(0), squadre.get(1), null, 0, 0);
-        Partita semi2 = new Partita(squadre.get(2), squadre.get(3), null, 0, 0);
+        Partita semi1 = new Partita(squadre.get(0), squadre.get(1), null, null, null);
+        Partita semi2 = new Partita(squadre.get(2), squadre.get(3), null, null, null);
         return List.of(semi1, semi2);
     }
 
     /**
      * Restituisce le semifinali non ancora giocate.
      */
-    public List<Partita> getSemifinaliNonGiocate() {
-        return partite.stream()
-                .filter(p -> p.getGolCasa() == 0 && p.getGolTrasferta() == 0)
-                .filter(p -> p.getVincitore() == null)
-                .limit(2)
-                .collect(Collectors.toList());
-    }
+//    public List<Partita> getSemifinaliNonGiocate() {
+//        return partite.stream()
+//                .filter(p -> p.getGolCasa() == 0 && p.getGolTrasferta() == 0)
+//                .filter(p -> p.getVincitore() == null)
+//                .limit(2)
+//                .collect(Collectors.toList());
+//    }
 
     /**
      * Restituisce la finale non ancora giocata.
      */
-    public Partita getFinaleNonGiocata() {
-        return partite.stream()
-                .filter(p -> p.getGolCasa() == 0 && p.getGolTrasferta() == 0)
-                .filter(p -> p.getVincitore() == null)
-                .skip(2)
-                .findFirst()
-                .orElse(null);
-    }
+//    public Partita getFinaleNonGiocata() {
+//        return partite.stream()
+//                .filter(p -> p.getGolCasa() == 0 && p.getGolTrasferta() == 0)
+//                .filter(p -> p.getVincitore() == null)
+//                .skip(2)
+//                .findFirst()
+//                .orElse(null);
+//    }
 
     /**
      * Converte un’entity Partita in DTO per il front.
@@ -154,7 +154,7 @@ public class TorneoService {
                 dto.getSquadraCasa(),
                 dto.getGolCasa(),
                 dto.getSquadraTrasferta(),
-                dto.getGoltrasferta(),
+                dto.getGolTrasferta(),
                 List.of(marcatore)
         );
     }

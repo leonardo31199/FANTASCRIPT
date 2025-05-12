@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Data
@@ -19,11 +20,11 @@ public class Partita {
   private Squadra squadraTrasferta;
   private Squadra vincitore;
   private List<TelecronacaDTO> telecronaca = new ArrayList<>();
-  private int golCasa;
-  private int golTrasferta;
+  private int [] golCasa;
+  private int [] golTrasferta;
 
 
-    public Partita(Squadra squadraCasa, Squadra squadraTrasferta, Squadra vincitore, int golCasa, int golTrasferta) {
+    public Partita(Squadra squadraCasa, Squadra squadraTrasferta, Squadra vincitore, int [] golCasa, int [] golTrasferta) {
         this.squadraCasa = squadraCasa;
         this.squadraTrasferta = squadraTrasferta;
         this.vincitore = vincitore;
@@ -39,16 +40,33 @@ public class Partita {
 
 
         // gol in casa da 0 a 5
-        this.golCasa = (int) (Math.random()*6);
+        int numerocasa = (int) (Math.random()*6);
 
         //gol in trasfera **
-        this.golTrasferta = (int) (Math.random()*6);
+        int numerotrasferta = (int) (Math.random()*6);
 
-        if (golCasa>golTrasferta)
+        this.golCasa=new int[numerocasa];
+
+        for (int i=0;i<numerocasa;i++)
+        {
+            this.golCasa[i]=(int) (Math.random()*91);
+        }
+
+
+        this.golTrasferta=new int[numerotrasferta];
+
+        for (int i=0;i<numerotrasferta;i++)
+        {
+            this.golTrasferta[i]=(int) (Math.random()*91);
+        }
+        Arrays.sort(this.golCasa);
+        Arrays.sort(this.golTrasferta);
+
+        if (numerocasa>numerotrasferta)
         {
             vincitore= squadraCasa; //vince squadra in casa
 
-        } else if (golCasa<golTrasferta) {
+        } else if (numerocasa<numerotrasferta) {
             vincitore = squadraTrasferta; //vince trasferta
         }
           else

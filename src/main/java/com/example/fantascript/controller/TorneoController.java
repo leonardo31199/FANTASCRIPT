@@ -42,6 +42,18 @@ public class TorneoController {
 
         return new ResponseEntity<>(partitaDTOs, HttpStatus.OK);
     }
+//    @GetMapping("/prepara")
+//    public ResponseEntity<List<PartitaDTO>> preparaTorneo() {
+//        try {
+//            List<PartitaDTO> semiDto = torneoService.preparaSemifinali().stream()
+//                    .map(torneoService::toDTO)
+//                    .collect(Collectors.toList());
+//            return ResponseEntity.ok(semiDto);
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+//        }
+//    }
+
 //    @GetMapping("/avvia")
 //    public ResponseEntity<List<PartitaDTO>> avviaTorneo() {
 //        try {

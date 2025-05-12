@@ -12,8 +12,8 @@ import java.util.List;
 public class TelecronacaRequestDTO {
     private String fase;                     // “semifinale” o “finale”
     private String squadraCasa;
-    private int golCasa;
+    private int [] golCasa;
     private String squadraTrasferta;
-    private int golTrasferta;
+    private int [] golTrasferta;
     private List<GiocatoreGoalDTO> marcatori; // lista dei marcatori con minuto
 }
