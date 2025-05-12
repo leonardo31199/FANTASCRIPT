@@ -27,6 +27,6 @@ public class Squadra extends BaseEntity {
 
 
 
-
+//ciao
 
 }
