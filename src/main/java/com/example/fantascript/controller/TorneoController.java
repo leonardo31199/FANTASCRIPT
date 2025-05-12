@@ -6,6 +6,7 @@ import com.example.fantascript.model.dto.TelecronacaRequestDTO;
 import com.example.fantascript.model.entities.Partita;
 import com.example.fantascript.service.TorneoService;
 import com.example.fantascript.service.IaIa;
+import com.example.fantascript.service.TorneoSessionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +22,7 @@ public class TorneoController {
 
     private final TorneoService torneoService;
     private final IaIa iaService;
-
+    private final TorneoSessionService sessionService;
     private boolean semifinaleInCorso = false;
     private boolean finaleInCorso = false;
 
