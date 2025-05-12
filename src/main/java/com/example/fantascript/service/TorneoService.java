@@ -23,7 +23,7 @@ public class TorneoService {
 
     private final SquadraDAO squadraDAO;
     private final GiocatoreService giocatoreService;
-    private final IaIa iaService;
+
 
     // Lista delle partite che vive per tutta la durata della sessione
     private final List<Partita> partite = new ArrayList<>();
