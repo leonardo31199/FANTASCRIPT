@@ -65,9 +65,9 @@ private final IaIa iaService;
         partite.add(semi2);
         partite.add(finale);
 //decommetare per la telecronaca ia
-//        semi1.setTelecronaca(iaService.telecronista(buildTelecronacaRequest(semi1,"semifinale")).block());
-//        semi2.setTelecronaca(iaService.telecronista(buildTelecronacaRequest(semi2,"semifinale")).block());
-//        finale.setTelecronaca(iaService.telecronista(buildTelecronacaRequest(finale,"finale")).block());
+        semi1.setTelecronaca(iaService.telecronista(buildTelecronacaRequest(semi1,"semifinale")).block());
+        semi2.setTelecronaca(iaService.telecronista(buildTelecronacaRequest(semi2,"semifinale")).block());
+        finale.setTelecronaca(iaService.telecronista(buildTelecronacaRequest(finale,"finale")).block());
 //        // 6) Restituisci una lista non modificabile
         return List.copyOf(partite);
     }

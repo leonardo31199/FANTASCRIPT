@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -30,12 +31,17 @@ public class IaIa {
 	public Mono<List<TelecronacaDTO>> telecronista(TelecronacaRequestDTO partita) {
 		String prompt = String.format(
 				"Sei un telecronista sportivo. Fase: %s. Partita %s vs %s (%d-%d). " +
-						"Marcatore: %s al %d'. Le partite durano 90 minuti, senza recupero. Restituisci JSON array di oggetti {minuto, commento}:",
+						"Gol %s: %s. Gol %s: %s. " +
+						"Le partite durano 90 minuti, senza recupero, senza supplementari, senza rigori. " +
+						"Il minuto deve essere solo un numero intero, minore o uguake a 90 " +
+						"Restituisci un array JSON di oggetti nel formato {minuto, commento}, con commenti coerenti con il momento della partita e i gol indicati.",
 				partita.getFase(),
 				partita.getSquadraCasa(), partita.getSquadraTrasferta(),
-				partita.getGolCasa(), partita.getGolTrasferta(),
-				partita.getMarcatori().get(0).getNome() + " " + partita.getMarcatori().get(0).getCognome(),                partita.getMarcatori().get(0).getMinuto()
+				partita.getGolCasa().length, partita.getGolTrasferta().length,
+				partita.getSquadraCasa(), Arrays.toString(partita.getGolCasa()),
+				partita.getSquadraTrasferta(), Arrays.toString(partita.getGolTrasferta())
 		);
+
 
 		ChatRequest req = new ChatRequest(
 				model,
