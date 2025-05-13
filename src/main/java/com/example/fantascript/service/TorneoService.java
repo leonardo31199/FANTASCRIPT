@@ -23,7 +23,7 @@ public class TorneoService {
 
     private final SquadraDAO squadraDAO;
     private final GiocatoreService giocatoreService;
-    private final IaIa iaService;
+private final IaIa iaService;
 
     // Lista delle partite che vive per tutta la durata della sessione
     private final List<Partita> partite = new ArrayList<>();
@@ -44,6 +44,7 @@ public class TorneoService {
 
         if (squadre.size() < 4) {
             throw new RuntimeException("Servono almeno 4 squadre per iniziare il torneo.");
+
         }
         Collections.shuffle(squadre);
 
@@ -63,7 +64,10 @@ public class TorneoService {
         partite.add(semi1);
         partite.add(semi2);
         partite.add(finale);
-
+//decommetare per la telecronaca ia
+        semi1.setTelecronaca(iaService.telecronista(buildTelecronacaRequest(semi1,"semifinale")).block());
+        semi2.setTelecronaca(iaService.telecronista(buildTelecronacaRequest(semi2,"semifinale")).block());
+        finale.setTelecronaca(iaService.telecronista(buildTelecronacaRequest(finale,"finale")).block());
         // 6) Restituisci una lista non modificabile
         return List.copyOf(partite);
     }
