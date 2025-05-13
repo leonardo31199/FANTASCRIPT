@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Entity
 @Data
+
 public class Squadra extends BaseEntity {
 
     private String nome;

@@ -30,7 +30,7 @@ public class IaIa {
 	public Mono<List<TelecronacaDTO>> telecronista(TelecronacaRequestDTO partita) {
 		String prompt = String.format(
 				"Sei un telecronista sportivo. Fase: %s. Partita %s vs %s (%d-%d). " +
-						"Marcatore: %s al %d'. Restituisci JSON array di oggetti {minuto, commento}:",
+						"Marcatore: %s al %d'. Le partite durano 90 minuti, senza recupero. Restituisci JSON array di oggetti {minuto, commento}:",
 				partita.getFase(),
 				partita.getSquadraCasa(), partita.getSquadraTrasferta(),
 				partita.getGolCasa(), partita.getGolTrasferta(),
