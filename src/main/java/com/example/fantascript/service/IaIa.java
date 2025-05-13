@@ -33,7 +33,7 @@ public class IaIa {
 				"Sei un telecronista sportivo. Fase: %s. Partita %s vs %s (%d-%d). " +
 						"Gol %s: %s. Gol %s: %s. " +
 						"Le partite durano 90 minuti, senza recupero, senza supplementari, senza rigori. " +
-						"Il minuto deve essere solo un numero intero, minore o uguake a 90 " +
+						"Il minuto deve essere solo un numero intero, minore o uguale a 90 " +
 						"Restituisci un array JSON di oggetti nel formato {minuto, commento}, con commenti coerenti con il momento della partita e i gol indicati.",
 				partita.getFase(),
 				partita.getSquadraCasa(), partita.getSquadraTrasferta(),
