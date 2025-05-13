@@ -111,7 +111,7 @@ public class TorneoController {
 //    }
 
     // Avvia la telecronaca della finale
-//   // @PostMapping("/telecronaca/finale")
+//    @PostMapping("/telecronaca/finale")
 //    public ResponseEntity<List<TelecronacaDTO>> telecronacaFinale(@RequestBody TelecronacaRequestDTO partita) {
 //        try {
 //            var telecronache = iaService.telecronista(partita).block();
