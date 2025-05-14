@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class TelecronacaDTO {
     private int minuto;
     private String commento;
+    private int x;
+    private int y;
 }

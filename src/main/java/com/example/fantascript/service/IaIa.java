@@ -1,81 +1,159 @@
 package com.example.fantascript.service;
 
-import com.example.fantascript.model.dto.TelecronacaRequestDTO;
 import com.example.fantascript.model.dto.TelecronacaDTO;
+import com.example.fantascript.model.dto.TelecronacaRequestDTO;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+@Slf4j
 public class IaIa {
 
-	@Value("${lmstudio.url}")
-	private String baseUrl;
+	/* ------------------------------------------------------------------ */
+	/* ----------------------- CONFIGURAZIONE --------------------------- */
+	/* ------------------------------------------------------------------ */
 
-	@Value("${lmstudio.model}")
-	private String model;
+	/** Endpoint completo: es. http://127.0.0.1:1234/v1/chat/completions */
+	private final String endpoint;
 
-	private final WebClient client = WebClient.builder().build();
-	private final ObjectMapper mapper = new ObjectMapper();
+	/** Nome del modello, es. hermes‑3‑llama‑3.1‑8b */
+	private final String model;
+
+	/** Tentativi massimi se il JSON restituito non è valido */
+	private static final int MAX_RETRY = 2;
+
+	private final WebClient client;
+	private final ObjectMapper mapper;
+
+	public IaIa(@Value("${lmstudio.url}") String endpoint,
+				@Value("${lmstudio.model}") String model,
+				WebClient.Builder builder,
+				ObjectMapper mapper) {
+
+		this.endpoint = endpoint;
+		this.model    = model;
+		this.mapper   = mapper;
+
+		this.client = builder
+				.defaultHeader(HttpHeaders.USER_AGENT, "Fantascript/1.0")
+				.build();
+	}
+
+	/* ------------------------------------------------------------------ */
+	/* ------------------------- API PUBBLICA --------------------------- */
+	/* ------------------------------------------------------------------ */
 
 	public Mono<List<TelecronacaDTO>> telecronista(TelecronacaRequestDTO partita) {
-		String prompt = String.format(
-				"Sei un telecronista sportivo. Fase: %s. Partita %s vs %s (%d-%d). " +
-						"Gol %s: %s. Gol %s: %s. " +
-						"Le partite durano 90 minuti, senza recupero, senza supplementari, senza rigori. " +
-						"Il minuto deve essere solo un numero intero, minore o uguale a 90 " +
-						"Restituisci un array JSON di oggetti nel formato {minuto, commento}, con commenti coerenti con il momento della partita e i gol indicati.",
-				partita.getFase(),
-				partita.getSquadraCasa(), partita.getSquadraTrasferta(),
-				partita.getGolCasa().length, partita.getGolTrasferta().length,
-				partita.getSquadraCasa(), Arrays.toString(partita.getGolCasa()),
-				partita.getSquadraTrasferta(), Arrays.toString(partita.getGolTrasferta())
-		);
+		String userPrompt = buildUserPrompt(partita);
 
-
-		ChatRequest req = new ChatRequest(
-				model,
+		ChatRequest req = buildChatRequest(
 				List.of(
-						new ChatRequest.Message("system", "Tu da oggi sei un telecronista esperto."),
-						new ChatRequest.Message("user", prompt)
-				),
-				false
+						new ChatRequest.Message("system",
+								"Rispondi esclusivamente con un array JSON (nessun testo extra). " +
+										"Ogni oggetto deve contenere le chiavi: \"minuto\" (int 1‑90), " +
+										"\"commento\" (string), \"x\" (int 0‑100), \"y\" (int 0‑100)."),
+						new ChatRequest.Message("user", userPrompt)
+				)
 		);
 
+		return askModel(req, 0);
+	}
+
+	/* ------------------------------------------------------------------ */
+	/* -------------------------- METODI PRIVATI ------------------------ */
+	/* ------------------------------------------------------------------ */
+
+	private String buildUserPrompt(TelecronacaRequestDTO p) {
+		return String.format(
+				"Sei un telecronista sportivo.\n" +
+						"Fase: %s.\n" +
+						"Partita %s vs %s (%d‑%d).\n" +
+						"Gol %s: %s.\n" +
+						"Gol %s: %s.\n" +
+						"Le partite durano 90 minuti netti. Il minuto DEVE essere un intero ≤ 90.\n" +
+						"Restituisci l’array JSON come da istruzioni di sistema e nient’altro.",
+				p.getFase(),
+				p.getSquadraCasa(), p.getSquadraTrasferta(),
+				p.getGolCasa().length, p.getGolTrasferta().length,
+				p.getSquadraCasa(), Arrays.toString(p.getGolCasa()),
+				p.getSquadraTrasferta(), Arrays.toString(p.getGolTrasferta())
+		);
+	}
+
+	private ChatRequest buildChatRequest(List<ChatRequest.Message> messages) {
+		return new ChatRequest(
+				model,
+				messages,
+				false,
+
+				0.2,
+				1.0
+		);
+	}
+
+	private Mono<List<TelecronacaDTO>> askModel(ChatRequest req, int attempt) {
 		return client.post()
-				.uri(baseUrl + "/v1/chat/completions")
+				.uri(endpoint)                                   // endpoint completo
 				.contentType(MediaType.APPLICATION_JSON)
 				.bodyValue(req)
 				.retrieve()
 				.bodyToMono(ChatResponse.class)
-				// estrai solo il contenuto testuale
+				.timeout(Duration.ofSeconds(60))
 				.map(cr -> cr.choices().get(0).message().content())
-				// parsifica il JSON in List<TelecronacaDTO> con gestione dell’eccezione
-				.map(json -> {
+				.flatMap(json -> {
 					try {
-						return mapper.readValue(json, new TypeReference<List<TelecronacaDTO>>() {});
+						return Mono.just(mapper.readValue(
+								json, new TypeReference<List<TelecronacaDTO>>() {}));
 					} catch (JsonProcessingException e) {
-						throw new RuntimeException("Errore parsing JSON della telecronaca: " + e.getMessage(), e);
+						if (attempt >= MAX_RETRY) {
+							return Mono.error(new RuntimeException(
+									"JSON non valido dopo "
+											+ (attempt + 1) + " tentativi: " + e.getMessage(), e));
+						}
+						log.warn("Tentativo {}: JSON non valido – {}", attempt + 1, e.getOriginalMessage());
+
+						ChatRequest retryReq = buildChatRequest(
+								List.of(
+										new ChatRequest.Message("system",
+												"Il JSON che hai restituito non è valido. Errore:\n"
+														+ e.getOriginalMessage()
+														+ "\n\nRiprova restituendo SOLO l’array JSON corretto."),
+										new ChatRequest.Message("assistant", json)
+								)
+						);
+						return askModel(retryReq, attempt + 1);
 					}
 				});
 	}
 
+	/* ------------------------------------------------------------------ */
+	/* --------------------- RECORDS PER LA CHIAMATA -------------------- */
+	/* ------------------------------------------------------------------ */
+
+	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public record ChatRequest(
 			String model,
 			List<Message> messages,
-			boolean stream
+			boolean stream,
+			Double temperature,
+			Double top_p
 	) {
 		public record Message(String role, String content) {}
+		public record ResponseFormat(String type) {}
 	}
 
 	public record ChatResponse(
@@ -89,4 +167,3 @@ public class IaIa {
 		}
 	}
 }
-//inteligenza art.
