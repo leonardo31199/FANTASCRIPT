@@ -90,7 +90,7 @@ private final IaIa iaService;
         Partita semi2 = new Partita(squadre.get(2), squadre.get(3), null, null, null);
         return List.of(semi1, semi2);
     }
-
+//ciao
     /**
      * Restituisce le semifinali non ancora giocate.
      */
