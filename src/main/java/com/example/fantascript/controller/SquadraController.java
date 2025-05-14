@@ -135,9 +135,13 @@ public List <Squadra>getBotSquadre()
 
 }
 
-
-
-
+    @PutMapping("/squadre/logo/{id}")
+    public void aggiornaLogo(@PathVariable long id, @RequestParam String url)
+    {
+        Squadra s = sdao.findById(id).orElse(null);
+        s.setLogo(url);
+        sdao.save(s);
+    }
 
 
     @PostMapping("/squadre/utente")

@@ -65,7 +65,16 @@ public class IaIa {
 						new ChatRequest.Message("system",
 								"Rispondi esclusivamente con un array JSON (nessun testo extra). " +
 										"Ogni oggetto deve contenere le chiavi: \"minuto\" (int 1‑90), " +
-										"\"commento\" (string), \"x\" (int 0‑100), \"y\" (int 0‑100)."),
+										"\"commento\" (string), \"x\" (int 0‑93), \"y\" (int 0‑94)."+
+								"Genera una lista di eventi per una partita di calcio simulata da 1 a 90 minuti. " +
+										"Non solo goal: includi anche azioni come tiri, parate, dribbling, cross, contrasti, errori, ecc. " +
+										"Ogni azione deve avere una posizione realistica in campo: " +
+										"se il commento parla di 'cross dalla sinistra', le coordinate devono essere a sinistra; " +
+										"se è un 'tiro centrale', la palla deve essere nella zona centrale davanti alla porta; " +
+										"se è un recupero palla in difesa, deve essere vicino all'area difensiva. " +
+										"Rendi la cronaca varia e avvincente, come farebbe un vero telecronista."
+
+						),
 						new ChatRequest.Message("user", userPrompt)
 				)
 		);
@@ -112,7 +121,6 @@ public class IaIa {
 				.bodyValue(req)
 				.retrieve()
 				.bodyToMono(ChatResponse.class)
-				.timeout(Duration.ofSeconds(60))
 				.map(cr -> cr.choices().get(0).message().content())
 				.flatMap(json -> {
 					try {
